@@ -2,95 +2,15 @@
 #include <GLFW/glfw3.h>
 
 #include <iostream>
-#include <fstream>
 #include <string>
-#include <sstream>
-#include <tuple>
+
 
 #include "Renderer.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
 #include "VertexArray.h"
 #include "VertexBufferLayout.h"
-
-static std::tuple<std::string, std::string> ParseShader(const std::string& filepath)
-{
-	std::ifstream stream(filepath);
-
-	enum class ShaderType
-	{
-		None = -1,
-		Vertex = 0,
-		Fragment = 1
-	};
-
-	std::string line;
-	std::stringstream ss[2];
-	ShaderType type = ShaderType::None;
-
-	while (getline(stream, line))
-	{
-		if (line.find("#shader") != std::string::npos)
-		{
-			if (line.find("vertex") != std::string::npos)
-			{
-				type = ShaderType::Vertex;
-			}
-			else if (line.find("fragment") != std::string::npos)
-			{
-				type = ShaderType::Fragment;
-			}
-		}
-		else
-		{
-			ss[static_cast<int32_t>(type)] << line << std::endl;
-		}
-	}
-	return { ss[0].str(), ss[1].str() };
-}
-
-static uint32_t CompileShader(uint32_t type, const std::string& source)
-{
-	uint32_t id = glCreateShader(type);
-	const char* src = source.c_str();
-
-	glShaderSource(id, 1, &src, nullptr);
-	glCompileShader(id);
-
-	int32_t result;
-	glGetShaderiv(id, GL_COMPILE_STATUS, &result);
-
-	if (!result)
-	{
-		int32_t lenght;
-		glGetShaderiv(id, GL_INFO_LOG_LENGTH, &lenght);
-		char* message = new char[lenght];
-		glGetShaderInfoLog(id, lenght, &lenght, message);
-		std::cout << message << std::endl;
-		glDeleteShader(id);
-		delete[]message;
-		return 0;
-	}
-
-	return id;
-}
-
-static uint32_t CreateShader(const std::string& vertexShader, const std::string& fragmentShader)
-{
-	uint32_t program = glCreateProgram();
-	uint32_t vs = CompileShader(GL_VERTEX_SHADER, vertexShader);
-	uint32_t fs = CompileShader(GL_FRAGMENT_SHADER, fragmentShader);
-
-	glAttachShader(program, vs);
-	glAttachShader(program, fs);
-	glLinkProgram(program);
-	glValidateProgram(program);
-
-	glDeleteShader(vs);
-	glDeleteShader(fs);
-
-	return program;
-}
+#include "Shader.h"
 
 int main(void)
 {
@@ -143,12 +63,10 @@ int main(void)
 	IndexBuffer ib(indices, 6);
 	ib.Bind();
 
-	auto [vertexSource, fragmentSource] = ParseShader("res/shaders/Basic.shader");
-	uint32_t shader = CreateShader(vertexSource, fragmentSource);
-	glUseProgram(shader);
+	Shader sh("res/shaders/Basic.shader");
+	sh.Bind();
 
-
-	int32_t location = glGetUniformLocation(shader, "u_Color");
+	std::string uniform = "u_Color";
 	float r = 0.2f;
 	float g = 0.3f;
 	float b = 0.8f;
@@ -160,7 +78,7 @@ int main(void)
 		/* Render here */
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		glUniform4f(location, r, g, b, 1.0f);
+		sh.SetUniform4f(uniform, r, g, b, 1.0f);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 
 		if (r > 1.0f)
@@ -180,7 +98,6 @@ int main(void)
 		glfwPollEvents();
 	}
 
-	glDeleteProgram(shader);
 	glfwTerminate();
 	return 0;
 }
