@@ -11,7 +11,10 @@ public:
 	void Bind() const;
 	void Unbind() const;
 
-	inline int32_t GetCount() const;
+	inline int32_t GetCount() const
+	{
+			return m_Count;
+	}
 private:
 	uint32_t m_RendererID;
 	uint32_t m_Count;

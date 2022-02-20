@@ -23,8 +23,3 @@ void IndexBuffer::Unbind() const
 {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
-
-inline int32_t IndexBuffer::GetCount() const
-{
-	return m_Count;
-}

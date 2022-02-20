@@ -38,56 +38,48 @@ int main(void)
 		return 0;
 	}
 
-	/* Debug messages */
-	glEnable(GL_DEBUG_OUTPUT);
-	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-	glDebugMessageCallback(GLLogError, nullptr);
-
-	VertexArray va;
-
 	float positions[] = {
 		-0.5f, -0.5f,
 		 0.5f, -0.5f,
 		 0.5f,  0.5f,
 		-0.5f,  0.5f
 	};
-	VertexBuffer vb(positions, 4 * 2 * sizeof(float));
-	VertexBufferLayout layout;
-	layout.Push<float>(2);
-	va.AddBuffer(vb, layout);
 
 	uint32_t indices[] = {
 		0, 1, 2,
 		2, 3, 0
 	};
+
+	VertexArray va;
+	VertexBuffer vb(positions, 4 * 2 * sizeof(float));
+	VertexBufferLayout layout;
+	layout.Push<float>(2);
+	va.AddBuffer(vb, layout);
 	IndexBuffer ib(indices, 6);
-	ib.Bind();
-
 	Shader sh("res/shaders/Basic.shader");
-	sh.Bind();
-
+	Renderer renderer;
 	std::string uniform = "u_Color";
 	float r = 0.2f;
 	float g = 0.3f;
 	float b = 0.8f;
-	float increment = 0.005f;
+	float increment = 0.01f;
 
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))
 	{
 		/* Render here */
-		glClear(GL_COLOR_BUFFER_BIT);
+		renderer.Clear();
 
+		renderer.Draw(va, ib, sh);
 		sh.SetUniform4f(uniform, r, g, b, 1.0f);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 
 		if (r > 1.0f)
 		{
-			increment = -0.005f;
+			increment = -0.01f;
 		}
 		else if (r < 0.0f)
 		{
-			increment = 0.005f;
+			increment = 0.01f;
 		}
 		r += increment;
 
