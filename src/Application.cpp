@@ -10,11 +10,12 @@
 #include "Renderer.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
+#include "VertexArray.h"
+#include "VertexBufferLayout.h"
 
 static std::tuple<std::string, std::string> ParseShader(const std::string& filepath)
 {
 	std::ifstream stream(filepath);
-
 
 	enum class ShaderType
 	{
@@ -122,9 +123,7 @@ int main(void)
 	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 	glDebugMessageCallback(GLLogError, nullptr);
 
-	uint32_t vao;
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
+	VertexArray va;
 
 	float positions[] = {
 		-0.5f, -0.5f,
@@ -132,9 +131,10 @@ int main(void)
 		 0.5f,  0.5f,
 		-0.5f,  0.5f
 	};
-	VertexBuffer vb(positions, 4* 2 * sizeof(float));
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
+	VertexBuffer vb(positions, 4 * 2 * sizeof(float));
+	VertexBufferLayout layout;
+	layout.Push<float>(2);
+	va.AddBuffer(vb, layout);
 
 	uint32_t indices[] = {
 		0, 1, 2,
