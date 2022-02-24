@@ -11,6 +11,7 @@
 #include "VertexArray.h"
 #include "VertexBufferLayout.h"
 #include "Shader.h"
+#include "Texture.h"
 
 int main(void)
 {
@@ -21,7 +22,7 @@ int main(void)
 		return -1;
 
 	/* Create a windowed mode window and its OpenGL context */
-	window = glfwCreateWindow(640, 640, "OpenGL", NULL, NULL);
+	window = glfwCreateWindow(640, 500, "OpenGL", NULL, NULL);
 	if (!window)
 	{
 		glfwTerminate();
@@ -38,11 +39,14 @@ int main(void)
 		return 0;
 	}
 
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	float positions[] = {
-		-0.5f, -0.5f,
-		 0.5f, -0.5f,
-		 0.5f,  0.5f,
-		-0.5f,  0.5f
+		-0.5f, -0.5f, 0.0f, 0.0f,
+		 0.5f, -0.5f, 1.0f, 0.0f,
+		 0.5f,  0.5f, 1.0f, 1.0f,
+		-0.5f,  0.5f, 0.0f, 1.0f
 	};
 
 	uint32_t indices[] = {
@@ -51,18 +55,18 @@ int main(void)
 	};
 
 	VertexArray va;
-	VertexBuffer vb(positions, 4 * 2 * sizeof(float));
+	VertexBuffer vb(positions, 4 * 4 * sizeof(float));
 	VertexBufferLayout layout;
+	layout.Push<float>(2);
 	layout.Push<float>(2);
 	va.AddBuffer(vb, layout);
 	IndexBuffer ib(indices, 6);
 	Shader sh("res/shaders/Basic.shader");
+
 	Renderer renderer;
-	std::string uniform = "u_Color";
-	float r = 0.2f;
-	float g = 0.3f;
-	float b = 0.8f;
-	float increment = 0.01f;
+
+	Texture te("res/textures/avatar.png");
+	te.Bind();
 
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))
@@ -71,17 +75,7 @@ int main(void)
 		renderer.Clear();
 
 		renderer.Draw(va, ib, sh);
-		sh.SetUniform4f(uniform, r, g, b, 1.0f);
-
-		if (r > 1.0f)
-		{
-			increment = -0.01f;
-		}
-		else if (r < 0.0f)
-		{
-			increment = 0.01f;
-		}
-		r += increment;
+		sh.SetUniform1i("u_Texture", 0);
 
 		/* Swap front and back buffers */
 		glfwSwapBuffers(window);

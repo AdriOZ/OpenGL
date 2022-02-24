@@ -36,9 +36,19 @@ void Shader::Unbind() const
 	glUseProgram(0);
 }
 
-void Shader::SetUniform4f(std::string& name, float v0, float v1, float v2, float v3)
+void Shader::SetUniform4f(const char* name, float v0, float v1, float v2, float v3)
 {
 	glUniform4f(GetUniformLocation(name), v0, v1, v2, v3);
+}
+
+void Shader::SetUniform1f(const char* name, float v0)
+{
+	glUniform1f(GetUniformLocation(name), v0);
+}
+
+void Shader::SetUniform1i(const char* name, int32_t v0)
+{
+	glUniform1i(GetUniformLocation(name), v0);
 }
 
 std::tuple<std::string, std::string> Shader::ParseShader(const std::string& filepath)
