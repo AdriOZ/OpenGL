@@ -5,6 +5,8 @@
 #include <string>
 
 
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
 #include "Renderer.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
@@ -22,7 +24,7 @@ int main(void)
 		return -1;
 
 	/* Create a windowed mode window and its OpenGL context */
-	window = glfwCreateWindow(640, 500, "OpenGL", NULL, NULL);
+	window = glfwCreateWindow(640, 480, "OpenGL", NULL, NULL);
 	if (!window)
 	{
 		glfwTerminate();
@@ -60,13 +62,21 @@ int main(void)
 	layout.Push<float>(2);
 	layout.Push<float>(2);
 	va.AddBuffer(vb, layout);
+
 	IndexBuffer ib(indices, 6);
+	glm::mat4 proj = glm::ortho(-2.0f, 2.0f, -1.5f, 1.5f, -1.0f, 1.0f);
+	
 	Shader sh("res/shaders/Basic.shader");
+	sh.Bind();
+	sh.SetUniform1i("u_Texture", 0);
+	sh.SetUniformMat4f("u_MVP", proj);
+	sh.Unbind();
 
 	Renderer renderer;
 
 	Texture te("res/textures/avatar.png");
 	te.Bind();
+
 
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))
@@ -75,7 +85,7 @@ int main(void)
 		renderer.Clear();
 
 		renderer.Draw(va, ib, sh);
-		sh.SetUniform1i("u_Texture", 0);
+		
 
 		/* Swap front and back buffers */
 		glfwSwapBuffers(window);

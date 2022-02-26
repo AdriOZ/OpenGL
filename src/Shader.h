@@ -1,5 +1,7 @@
 #pragma once
 
+#include "glm/glm.hpp"
+
 #include <string>
 #include <unordered_map>
 
@@ -13,6 +15,7 @@ public:
 	void SetUniform4f(const char* name, float v0, float v1, float v2, float v3);
 	void SetUniform1f(const char* name, float v0);
 	void SetUniform1i(const char* name, int32_t v0);
+	void SetUniformMat4f(const char* name, const glm::mat4& matrix);
 private:
 	std::string m_FilePath;
 	uint32_t m_RendererID;

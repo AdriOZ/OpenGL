@@ -51,6 +51,11 @@ void Shader::SetUniform1i(const char* name, int32_t v0)
 	glUniform1i(GetUniformLocation(name), v0);
 }
 
+void Shader::SetUniformMat4f(const char* name, const glm::mat4& matrix)
+{
+	glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, &matrix[0][0]);
+}
+
 std::tuple<std::string, std::string> Shader::ParseShader(const std::string& filepath)
 {
 	std::ifstream stream(filepath);
