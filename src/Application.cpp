@@ -23,8 +23,14 @@ int main(void)
 	if (!glfwInit())
 		return -1;
 
+	/* Get the monitor */
+	GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+	const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+
+	std::cout << mode->width << " x " << mode->height;
 	/* Create a windowed mode window and its OpenGL context */
-	window = glfwCreateWindow(640, 480, "OpenGL", NULL, NULL);
+	window = glfwCreateWindow(mode->width, mode->height, "OpenGL", NULL, NULL);
+
 	if (!window)
 	{
 		glfwTerminate();
@@ -64,7 +70,7 @@ int main(void)
 	va.AddBuffer(vb, layout);
 
 	IndexBuffer ib(indices, 6);
-	glm::mat4 proj = glm::ortho(-2.0f, 2.0f, -1.5f, 1.5f, -1.0f, 1.0f);
+	glm::mat4 proj = glm::ortho(-1.6f, 1.6f, -0.9f, 0.9f, -1.0f, 1.0f);
 	
 	Shader sh("res/shaders/Basic.shader");
 	sh.Bind();
@@ -85,7 +91,6 @@ int main(void)
 		renderer.Clear();
 
 		renderer.Draw(va, ib, sh);
-		
 
 		/* Swap front and back buffers */
 		glfwSwapBuffers(window);
