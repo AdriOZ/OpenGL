@@ -51,10 +51,10 @@ int main(void)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	float positions[] = {
-		-0.5f, -0.5f, 0.0f, 0.0f,
-		 0.5f, -0.5f, 1.0f, 0.0f,
-		 0.5f,  0.5f, 1.0f, 1.0f,
-		-0.5f,  0.5f, 0.0f, 1.0f
+		-50.0f, -50.0f, 0.0f,   0.0f,
+		 50.0f, -50.0f, 100.0f, 0.0f,
+		 50.0f,  50.0f, 100.0f, 100.0f,
+		-50.0f,  50.0f, 0.0f,   100.0f
 	};
 
 	uint32_t indices[] = {
@@ -70,12 +70,16 @@ int main(void)
 	va.AddBuffer(vb, layout);
 
 	IndexBuffer ib(indices, 6);
-	glm::mat4 proj = glm::ortho(-1.6f, 1.6f, -0.9f, 0.9f, -1.0f, 1.0f);
+	glm::mat4 proj = glm::ortho(0.0f, (float)mode->width, 0.0f, (float)mode->height, -1.0f, 1.0f);
+	glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(500.0f, 500.0f, 0.0f));
+	glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(500.0f, 500.0f, 0.0f));
+	glm::mat4 mvp = proj * view * model;
+
 	
 	Shader sh("res/shaders/Basic.shader");
 	sh.Bind();
 	sh.SetUniform1i("u_Texture", 0);
-	sh.SetUniformMat4f("u_MVP", proj);
+	sh.SetUniformMat4f("u_MVP", mvp);
 	sh.Unbind();
 
 	Renderer renderer;
