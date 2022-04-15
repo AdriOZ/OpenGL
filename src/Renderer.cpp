@@ -51,6 +51,8 @@ Renderer::Renderer()
 	glEnable(GL_DEBUG_OUTPUT);
 	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 	glDebugMessageCallback(GLLogError, nullptr);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 void Renderer::Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& sh) const
